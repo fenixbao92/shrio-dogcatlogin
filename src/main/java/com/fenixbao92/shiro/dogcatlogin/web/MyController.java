@@ -1,5 +1,7 @@
 package com.fenixbao92.shiro.dogcatlogin.web;
 
+import com.fenixbao92.shiro.dogcatlogin.token.CatToken;
+import com.fenixbao92.shiro.dogcatlogin.token.DogToken;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -23,14 +25,14 @@ public class MyController {
     @RequestMapping(value = "/login/dog", method = {RequestMethod.GET})
     @ResponseBody
     public String loginDog(String userName,String password){
-        UsernamePasswordToken token = new UsernamePasswordToken(userName.trim(), password.trim());
+        DogToken dogToken = new DogToken(userName.trim(), password.trim());
         Subject subject = SecurityUtils.getSubject();
         try {
-            subject.login(token);
+            subject.login(dogToken);
         }catch (UnknownAccountException e) {
-            return "login fail:UnknownAccountException";
+            return "loginDog fail:UnknownAccountException";
         }catch(IncorrectCredentialsException e) {
-            return "login fail:IncorrectCredentialsException";
+            return "loginDog fail:IncorrectCredentialsException";
         }
         return "dog login success:";
     }
@@ -38,22 +40,27 @@ public class MyController {
     @RequestMapping(value = "/login/cat", method = {RequestMethod.GET})
     @ResponseBody
     public String loginCat(String userName,String password){
-        UsernamePasswordToken token = new UsernamePasswordToken(userName.trim(), password.trim());
+        CatToken catToken = new CatToken(userName.trim(), password.trim());
         Subject subject = SecurityUtils.getSubject();
         try {
-            subject.login(token);
+            subject.login(catToken);
         }catch (UnknownAccountException e) {
-            return "login fail:UnknownAccountException";
+            return "loginCat fail:UnknownAccountException";
         }catch(IncorrectCredentialsException e) {
-            return "login fail:IncorrectCredentialsException";
+            return "loginCat fail:IncorrectCredentialsException";
         }
         return "cat login success:";
     }
 
-    @RequestMapping(value = "/login", method = {RequestMethod.GET})
+    @RequestMapping(value = "/index", method = {RequestMethod.GET})
     @ResponseBody
     public String login(){
-        return "you have not login yet!I am a login page :)";
+        Subject subject = SecurityUtils.getSubject();
+        if(!subject.isAuthenticated()){
+            return "you have not login yet!I am a login page :)";
+        }else {
+            return (String) subject.getSession().getAttribute("words");
+        }
     }
 
     @RequestMapping(value = "/test", method = {RequestMethod.GET,RequestMethod.POST})

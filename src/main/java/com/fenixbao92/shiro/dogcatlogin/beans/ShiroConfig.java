@@ -13,7 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,7 +47,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**", "authc");
 
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
-        shiroFilterFactoryBean.setLoginUrl("/login");
         // 登录成功后要跳转的链接
         shiroFilterFactoryBean.setSuccessUrl("/index");
         // 未授权界面;
@@ -63,10 +64,14 @@ public class ShiroConfig {
     }
 
     @Bean
-    public SecurityManager securityManager(@Qualifier("dogRealm") Realm realm
-            , @Qualifier("sessionManager") SessionManager sessionManager) {
+    public SecurityManager securityManager(@Qualifier("dogRealm") Realm dogRealm,
+                                           @Qualifier("catRealm") Realm catRealm,
+                                           @Qualifier("sessionManager") SessionManager sessionManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(realm);
+        List<Realm> realms = new ArrayList<>();
+        realms.add(dogRealm);
+        realms.add(catRealm);
+        securityManager.setRealms(realms);
         //自定义session管理
         securityManager.setSessionManager(sessionManager);
         //自定义缓存实现
