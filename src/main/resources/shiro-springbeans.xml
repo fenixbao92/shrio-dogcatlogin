@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <!-- 自定义 realm -->
+    <bean id="catRealm" class="com.fenixbao92.shiro.dogcatlogin.realm.CatRealm"></bean>
+    <bean id="dogRealm" class="com.fenixbao92.shiro.dogcatlogin.realm.DogRealm"></bean>
+
+    <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+    <!-- 启用shrio授权注解拦截方式 -->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    <!--session-->
+    <bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
+
+    <bean id="sessionDao" class="com.fenixbao92.shiro.dogcatlogin.dao.MysqlSessionDao">
+        <!-- 配置SessionDao里面的 id生成器 -->
+        <property name="sessionIdGenerator" ref="sessionIdGenerator"/>
+        <!--&lt;!&ndash; 设置Session缓存到Eacehc的名字，默认就是shiro-activeSessionCache &ndash;&gt;-->
+        <!--<property name="activeSessionsCacheName" value="shiro-activeSessionCache"/>-->
+    </bean>
+
+    <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <!-- session超时 30 分钟 -->
+        <property name="globalSessionTimeout" value="1800000"/>
+
+        <property name="deleteInvalidSessions" value="true"/>
+
+        <!-- Session调度器，用来检查Session是否还存在的问题 -->
+        <property name="sessionValidationSchedulerEnabled" value="true"/>
+        <!--  设定session的调度管理器-->
+        <!--<property name="sessionValidationScheduler" ref="sessionValidationScheduler" />-->
+        <!-- 配置管理session的 dao -->
+        <property name="sessionDAO" ref="sessionDao"/>
+
+        <!-- 开启cookie 不然一直登录不上 -->
+        <property name="sessionIdCookieEnabled" value="true"/>
+        <property name="sessionIdCookie" ref="sessionIdCookie"/>
+    </bean>
+
+    <bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+        <constructor-arg value="hongcai-sid"/>
+        <property name="httpOnly" value="true"/>
+        <property name="maxAge" value="-1"/>
+    </bean>
+
+</beans>

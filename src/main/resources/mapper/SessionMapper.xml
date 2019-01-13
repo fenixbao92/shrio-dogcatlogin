@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fenixbao92.shiro.dogcatlogin.mapper.SessionMapper">
+
+    <resultMap id="Session" type="com.fenixbao92.shiro.dogcatlogin.domain.Session">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="session" jdbcType="VARCHAR" property="session"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+    </resultMap>
+
+    <!-- 添加数据到session中 -->
+    <insert id="insert">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.String">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into sys_session (id,session)
+        values (#{id,jdbcType=VARCHAR},#{session,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 根据id来删除session -->
+    <delete id="delete" parameterType="java.lang.String">
+        delete from sys_session where id = #{sessionid,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- 更新session -->
+    <update id="update">
+        update sys_session set
+        session = #{session,jdbcType=VARCHAR}
+        <if test="username != null">
+            , username = #{username,jdbcType=VARCHAR}
+        </if>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 获取session -->
+    <select id="load" parameterType="java.lang.String" resultMap="Session">
+        select * from sys_session where id = #{sessionid,jdbcType=VARCHAR}
+    </select>
+
+    <!-- 根据用户名来获取session -->
+    <select id="loadByUserName" resultMap="Session">
+        select * from sys_session where username = #{username,jdbcType=VARCHAR}
+    </select>
+
+</mapper>
