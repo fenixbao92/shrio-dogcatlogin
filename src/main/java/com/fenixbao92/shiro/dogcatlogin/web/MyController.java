@@ -34,7 +34,7 @@ public class MyController {
         }catch(IncorrectCredentialsException e) {
             return "loginDog fail:IncorrectCredentialsException";
         }
-        return "dog login success:";
+        return "dog login success!now you can go http://shiro.dogcatlogin.fenixbao92.com to meet me!";
     }
 
     @RequestMapping(value = "/login/cat", method = {RequestMethod.GET})
@@ -49,17 +49,19 @@ public class MyController {
         }catch(IncorrectCredentialsException e) {
             return "loginCat fail:IncorrectCredentialsException";
         }
-        return "cat login success:";
+        return "cat login success!now you can go http://shiro.dogcatlogin.fenixbao92.com to meet me!";
     }
 
-    @RequestMapping(value = "/index", method = {RequestMethod.GET})
+    @RequestMapping(value = "/", method = {RequestMethod.GET})
     @ResponseBody
     public String login(){
         Subject subject = SecurityUtils.getSubject();
         if(!subject.isAuthenticated()){
-            return "you have not login yet!I am a login page :)";
+            return "you have not login yet!I am a login page,click them to login:" +
+                    "1.  http://shiro.dogcatlogin.fenixbao92.com/login/cat?userName=helloKitty&password=123" +
+                    "2.  http://shiro.dogcatlogin.fenixbao92.com/login/dog?userName=snoopy&password=456";
         }else {
-            return (String) subject.getSession().getAttribute("words");
+            return (String) subject.getSession().getAttribute("words")+" you can use http://shiro.dogcatlogin.fenixbao92.com/logout to logout";
         }
     }
 
